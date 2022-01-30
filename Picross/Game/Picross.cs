@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Picross.Game
 {
@@ -12,6 +11,11 @@ namespace Picross.Game
             _board = new Board(15, 15);
         }
 
+        public void Initialize(int[][] verticalBlocks, int[][] horizontalBlocks)
+        {
+            _board.SetProblem(verticalBlocks, horizontalBlocks);
+        }
+        
         public void Solve(bool showIterations = false)
         {
             var changed = true;

@@ -34,10 +34,6 @@ namespace Picross.Game
             {
                 _boardVerticallyAligned[j] = string.Concat(Enumerable.Repeat("0", _height));
             }
-
-            CreateProblem();
-            _verticallyAlignedBlocks = _verticallyAlignedBlocks.Reverse().ToArray();
-            _horizontallyAlignedBlocks = _horizontallyAlignedBlocks.Reverse().ToArray();
         }
 
         public bool SolveIteration()
@@ -317,47 +313,10 @@ namespace Picross.Game
             }
         }
 
-        private void CreateProblem()
+        public void SetProblem(int[][] verticalBlocks, int[][] horizontalBlocks)
         {
-            // Y
-            _verticallyAlignedBlocks = new[]
-            {
-                new []{ 2 },
-                new []{ 1, 2 },
-                new []{ 1, 2, 1 },
-                new []{ 1, 1, 1, 2 },
-                new []{ 1, 4, 1, 1},
-                new []{ 6, 1, 2},
-                new []{ 1, 2, 1, 1 },
-                new []{ 2, 2, 1 },
-                new []{ 2, 3, 1, 1 },
-                new []{ 2, 3, 2 },
-                new []{ 11, 1, 1 },
-                new []{ 2, 5, 1 },
-                new []{ 1, 1, 1, 3 },
-                new []{ 1, 1, 1 },
-                new []{ 2 }
-            };
-            
-            // X
-            _horizontallyAlignedBlocks = new[]
-            {
-                new []{ 4 },
-                new []{ 2, 2 },
-                new []{ 1, 1, 1, 1 },
-                new []{ 1, 1, 2 },
-                new []{ 5, 3 },
-                new []{ 3, 1, 1, 2 },
-                new []{ 3, 2, 2, 1 },
-                new []{ 2, 1, 2, 3 },
-                new []{ 1, 2, 3, 1 },
-                new []{ 1, 4, 1 },
-                new []{ 1, 1, 5 },
-                new []{ 3, 1, 2 },
-                new []{ 4, 1 },
-                new []{ 2, 2, 1 },
-                new []{ 1, 2 }
-            };
+            _verticallyAlignedBlocks = verticalBlocks.Reverse().ToArray();
+            _horizontallyAlignedBlocks = horizontalBlocks.Reverse().ToArray();
         }
     }
 }
