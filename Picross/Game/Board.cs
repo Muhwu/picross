@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Picross.Game
 {
@@ -49,94 +50,106 @@ namespace Picross.Game
             return true;
         }
 
+        public string Merge(string existing, string proposal)
+        {
+            if (existing.Length != proposal.Length) return "";
+
+            var merged = "";
+            for (var i = 0; i < existing.Length; i++)
+            {
+                if (existing[i] == proposal[i])
+                {
+                    merged += existing[i];
+                    continue;
+                }
+
+                if (existing[i] == '0')
+                {
+                    merged += proposal[i];
+                    continue;
+                }
+
+                if (proposal[i] == '0')
+                {
+                    merged += existing[i];
+                    continue;
+                }
+
+                return "";
+            }
+
+            return merged;
+        }
+
         public bool IsLegal(string row, int[] blocks)
         {
-            return row.Length <= _width;
+            if (row.Length != _width) return false;
+
+            var regEx = "^0*";
+            for (var index = 0; index < blocks.Length; index++)
+            {
+                if (index > 0)
+                {
+                    regEx += "0+";
+                }
+                var b = blocks[index];
+                regEx += $"1{{{b}}}";
+            }
+
+            regEx += "0*$";
+
+            return Regex.IsMatch(row, regEx);
+        }
+
+        private List<string> GenerateRow(int rowLength, int[] blocks, int depth = 0)
+        {
+            var rows = new List<string>();
+
+            for (var startIndex = 0; startIndex < rowLength; startIndex++)
+            {
+                var lineSegment = "";
+                lineSegment += string.Concat(Enumerable.Repeat("0", startIndex));
+                if (startIndex > 0)
+                {
+                    lineSegment = lineSegment.Remove(lineSegment.Length - 1, 1) + "2";
+                }
+                lineSegment += string.Concat(Enumerable.Repeat("1", blocks[0]));
+                
+                var remainingRow = rowLength - startIndex - blocks[0];
+                if (remainingRow < 0) continue;
+                
+                if (blocks.Length == 1)
+                {
+                    if (remainingRow > 0)
+                    {
+                        lineSegment += "2";
+                    }
+
+                    if (remainingRow - 1 > 0)
+                        lineSegment += string.Concat(Enumerable.Repeat("0", remainingRow - 1));
+                    
+                    rows.Add(lineSegment);
+                }
+                else
+                {
+                    var subrows = GenerateRow(remainingRow - 1, blocks.Skip(1).ToArray(), depth + 1);
+                    foreach (var sr in subrows)
+                    {
+                        if (depth == 0 && !IsLegal(lineSegment + "2" + sr, blocks)) continue;
+                        rows.Add(lineSegment + "2" + sr);
+                    }
+                }
+            }
+
+            return rows;
         }
         
         public List<string> GenerateRows(in int[] remainingBlocks, string row)
         {
-            var rows = new List<string>();
-            
-            for (var b1 = 0; b1 < row.Length; b1++)
-            {
-                var b1Line = "";
-                b1Line += string.Concat(Enumerable.Repeat("0", b1));
-                b1Line += string.Concat(Enumerable.Repeat("1", remainingBlocks[0]));
-
-                // Place B1
-                for (var b2 = b1 + remainingBlocks[0] + 1; b2 < row.Length; b2++)
-                {
-                    var b2Line = "";
-                    b2Line += string.Concat(Enumerable.Repeat("0", b2 - b1 - remainingBlocks[0]));
-                    b2Line += string.Concat(Enumerable.Repeat("1", remainingBlocks[1]));
-                    
-                    for (var b3 = b2 + remainingBlocks[1] + 1; b3 < row.Length; b3++)
-                    {
-                        var b3Line = "";
-                        b3Line += string.Concat(Enumerable.Repeat("0", b3 - b2 - remainingBlocks[1]));
-                        b3Line += string.Concat(Enumerable.Repeat("1", remainingBlocks[2]));
-
-                        for (var b4 = b3 + remainingBlocks[2] + 1; b4 < row.Length; b4++)
-                        {
-                            var b4Line = "";
-                            
-                            b4Line += string.Concat(Enumerable.Repeat("0", b4 - b3 - remainingBlocks[2]));
-                            b4Line += string.Concat(Enumerable.Repeat("1", remainingBlocks[3]));
-
-                            if (remainingBlocks.Length == 1)
-                            {
-                                var line = b1Line + b2Line + b3Line + b4Line;
-                                line += string.Concat(Enumerable.Repeat("0", Math.Max(0, row.Length - line.Length)));
-
-                                if (IsLegal(line, remainingBlocks))
-                                {
-                                    Console.WriteLine(line);
-                                    // Yay
-                                    rows.Add(row);
-                                }
-                            }
-                            else
-                            {
-                                //
-                            }
-                        }
-                    }    
-                }
-            }
-            Console.WriteLine($"Found {rows.Count} rows.");
+            var rows = GenerateRow(row.Length, remainingBlocks);
             return rows;
         }
 
-        private bool CanPlaceBlock(int length, int startIndex, string row)
-        {
-            for (var b = 0; b < length; b++)
-            {
-                if (startIndex + b >= row.Length) return false;
-                if (row[startIndex + b] != '0')
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private int GetBlockCount(in int[] blocks)
-        {
-            var result = 0;
-            for (var i = 0; i < MaxBlocks; i++)
-            {
-                if (blocks[i] > 0)
-                {
-                    result++;
-                }
-            }
-
-            return result;
-        }
-        
-        
         public void Print()
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -322,8 +335,8 @@ namespace Picross.Game
             _xBlocks[13][1] = 2;
             _xBlocks[13][2] = 1;
 
-            _xBlocks[14][0] = 2;
-            _xBlocks[14][1] = 1;
+            _xBlocks[14][0] = 1;
+            _xBlocks[14][1] = 2;
         }
     }
 }

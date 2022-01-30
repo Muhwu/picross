@@ -1,4 +1,5 @@
 ﻿using System;
+using Picross.Tests;
 
 namespace Picross
 {
@@ -6,8 +7,10 @@ namespace Picross
     {
         static void Main(string[] args)
         {
+            TestLegality.Run();
+            
             var picross = new Game.Picross();
-            picross.Solve();
+            //picross.Solve();
         }
     }
 }
