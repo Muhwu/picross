@@ -34,9 +34,9 @@ namespace Picross.Tests
         
         public static void Run()
         {
-            TestIsLegal();
+            //TestIsLegal();
             TestPermutations();
-            TestMerge();
+            //TestMerge();
         }
 
         private struct PermutationTestCase
@@ -53,6 +53,9 @@ namespace Picross.Tests
                 new PermutationTestCase { Blocks = new []{1,1}, ExpectedResult = 91 },
                 new PermutationTestCase { Blocks = new []{1,2,2,3}, ExpectedResult = 70 },
                 new PermutationTestCase { Blocks = new []{1,11,1}, ExpectedResult = 1 },
+                new PermutationTestCase { Blocks = new []{5,3}, ExpectedResult = 28 },
+                new PermutationTestCase { Blocks = new []{5,3,0,0}, ExpectedResult = 28 },
+                new PermutationTestCase { Blocks = new []{11,1,1}, ExpectedResult = 1 },
             };
         }
         
