@@ -35,9 +35,6 @@ namespace Picross.Game
                 _boardVerticallyAligned[j] = string.Concat(Enumerable.Repeat("0", _height));
             }
 
-            _horizontallyAlignedBlocks = new int[width][];
-            _verticallyAlignedBlocks = new int[height][];
-
             CreateProblem();
             _verticallyAlignedBlocks = _verticallyAlignedBlocks.Reverse().ToArray();
             _horizontallyAlignedBlocks = _horizontallyAlignedBlocks.Reverse().ToArray();
@@ -323,38 +320,44 @@ namespace Picross.Game
         private void CreateProblem()
         {
             // Y
-            _verticallyAlignedBlocks[0] = new []{ 2 };
-            _verticallyAlignedBlocks[1] = new []{ 1, 2 };
-            _verticallyAlignedBlocks[2] = new []{ 1, 2, 1 };
-            _verticallyAlignedBlocks[3] = new []{ 1, 1, 1, 2 };
-            _verticallyAlignedBlocks[4] = new []{ 1, 4, 1, 1};
-            _verticallyAlignedBlocks[5] = new []{ 6, 1, 2};
-            _verticallyAlignedBlocks[6] = new []{ 1, 2, 1, 1 };
-            _verticallyAlignedBlocks[7] = new []{ 2, 2, 1 };
-            _verticallyAlignedBlocks[8] = new []{ 2, 3, 1, 1 };
-            _verticallyAlignedBlocks[9] = new []{ 2, 3, 2 };
-            _verticallyAlignedBlocks[10] = new []{ 11, 1, 1 };
-            _verticallyAlignedBlocks[11] = new []{ 2, 5, 1 };
-            _verticallyAlignedBlocks[12] = new []{ 1, 1, 1, 3 };
-            _verticallyAlignedBlocks[13] = new []{ 1, 1, 1 };
-            _verticallyAlignedBlocks[14] = new []{ 2 };
+            _verticallyAlignedBlocks = new[]
+            {
+                new []{ 2 },
+                new []{ 1, 2 },
+                new []{ 1, 2, 1 },
+                new []{ 1, 1, 1, 2 },
+                new []{ 1, 4, 1, 1},
+                new []{ 6, 1, 2},
+                new []{ 1, 2, 1, 1 },
+                new []{ 2, 2, 1 },
+                new []{ 2, 3, 1, 1 },
+                new []{ 2, 3, 2 },
+                new []{ 11, 1, 1 },
+                new []{ 2, 5, 1 },
+                new []{ 1, 1, 1, 3 },
+                new []{ 1, 1, 1 },
+                new []{ 2 }
+            };
             
             // X
-            _horizontallyAlignedBlocks[0] = new []{ 4 };
-            _horizontallyAlignedBlocks[1] = new []{ 2, 2 };
-            _horizontallyAlignedBlocks[2] = new []{ 1, 1, 1, 1 };
-            _horizontallyAlignedBlocks[3] = new []{ 1, 1, 2 };
-            _horizontallyAlignedBlocks[4] = new []{ 5, 3 };
-            _horizontallyAlignedBlocks[5] = new []{ 3, 1, 1, 2 };
-            _horizontallyAlignedBlocks[6] = new []{ 3, 2, 2, 1 };
-            _horizontallyAlignedBlocks[7] = new []{ 2, 1, 2, 3 };
-            _horizontallyAlignedBlocks[8] = new []{ 1, 2, 3, 1 };
-            _horizontallyAlignedBlocks[9] = new []{ 1, 4, 1 };
-            _horizontallyAlignedBlocks[10] = new []{ 1, 1, 5 };
-            _horizontallyAlignedBlocks[11] = new []{ 3, 1, 2 };
-            _horizontallyAlignedBlocks[12] = new []{ 4, 1 };
-            _horizontallyAlignedBlocks[13] = new []{ 2, 2, 1 };
-            _horizontallyAlignedBlocks[14] = new []{ 1, 2 };
+            _horizontallyAlignedBlocks = new[]
+            {
+                new []{ 4 },
+                new []{ 2, 2 },
+                new []{ 1, 1, 1, 1 },
+                new []{ 1, 1, 2 },
+                new []{ 5, 3 },
+                new []{ 3, 1, 1, 2 },
+                new []{ 3, 2, 2, 1 },
+                new []{ 2, 1, 2, 3 },
+                new []{ 1, 2, 3, 1 },
+                new []{ 1, 4, 1 },
+                new []{ 1, 1, 5 },
+                new []{ 3, 1, 2 },
+                new []{ 4, 1 },
+                new []{ 2, 2, 1 },
+                new []{ 1, 2 }
+            };
         }
     }
 }
