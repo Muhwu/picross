@@ -17,6 +17,8 @@ namespace Picross.Game
             var changed = true;
             var i = 0;
             Console.Write("Preparing solution... ");
+            if (true) 
+                _board.Print();
             while (_board.SolveIteration())
             {
                 i++;
