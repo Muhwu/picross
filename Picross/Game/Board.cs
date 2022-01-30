@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -17,8 +16,8 @@ namespace Picross.Game
         private string[] _squares;
         private string[] _squaresVertical;
 
-        private int[][] _xBlocks;
-        private int[][] _yBlocks;
+        private int[][] _horizontallyAligned;
+        private int[][] _verticallyAligned;
         
         public Board(int width, int height)
         {
@@ -36,13 +35,13 @@ namespace Picross.Game
                 _squaresVertical[j] = string.Concat(Enumerable.Repeat("0", _height));
             }
 
-            _xBlocks = new int[width][];
-            _yBlocks = new int[height][];
+            _horizontallyAligned = new int[width][];
+            _verticallyAligned = new int[height][];
 
             for (var i = 0; i < width; i++)
             {
-                _xBlocks[i] = new int[MaxBlocks];
-                _yBlocks[i] = new int[MaxBlocks];
+                _horizontallyAligned[i] = new int[MaxBlocks];
+                _verticallyAligned[i] = new int[MaxBlocks];
             }
 
             CreateProblem();
@@ -52,7 +51,7 @@ namespace Picross.Game
         {
             for (var y = 0; y < _height; y++)
             {
-                var validOnes = GenerateRows(_xBlocks[y], _squares[y]);
+                var validOnes = GenerateRows(_horizontallyAligned[y], _squares[y]);
                 var validCompatible = new List<string>();
                 foreach (var valid in validOnes)
                 {
@@ -60,16 +59,53 @@ namespace Picross.Game
                     if (merged != "")
                     {
                         validCompatible.Add(merged);
-                        Console.WriteLine(merged);
                     }
                 }
 
-                break;
+                if (validCompatible.Count == 0) continue;
+
+                // Check for present in all valid
+                CalculateInevitables(validCompatible, out var counters1, out var counters2);
+
+                for (var x = 0; x < _width; x++)
+                {
+                    if (counters1[x] == validCompatible.Count)
+                    {
+                        Console.WriteLine($"{counters1[x]} ones out of {validCompatible.Count} for ({x},{y})");
+                        Set(x, y, "1");
+                    }
+
+                    if (counters2[x] == validCompatible.Count)
+                    {
+                        Console.WriteLine($"{counters2[x]} twos out of {validCompatible.Count} for ({x},{y})");
+                        Set(x, y, "2");
+                    }
+                }
             }
             
             return true;
         }
 
+        private void CalculateInevitables(List<string> validCompatible, out int[] counters1, out int[] counters2)
+        {
+            counters1 = new int[_width];
+            counters2 = new int[_width];
+            foreach (var vc in validCompatible)
+            {
+                for (var i = 0; i < vc.Length; i++)
+                {
+                    counters1[i] += vc[i] == '1' ? 1 : 0;
+                    counters2[i] += vc[i] == '2' ? 1 : 0;
+                }
+            }
+        }
+
+        private void Set(int x, int y, string value)
+        {
+            _squaresVertical[y] = _squaresVertical[y].Remove(x, 1).Insert(x, value);
+            _squares[x] = _squares[x].Remove(y, 1).Insert(y, value);
+        }
+        
         public string Merge(string existing, string proposal)
         {
             if (existing.Length != proposal.Length) return "";
@@ -183,7 +219,7 @@ namespace Picross.Game
                 
                 for (var index = 0; index < _width; index++)
                 {
-                    PrintBlockNumber(index, _yBlocks[index][block]);
+                    PrintBlockNumber(index, _verticallyAligned[index][block]);
                 }
                 Console.Write("\n");
             }
@@ -192,7 +228,7 @@ namespace Picross.Game
             {
                 for (var bl = MaxBlocks - 1; bl >= 0; bl--)
                 {
-                    PrintBlockNumber(y, _xBlocks[y][bl]);
+                    PrintBlockNumber(y, _horizontallyAligned[y][bl]);
                 }
                 for (var x = 0; x < _width; x++)
                 {
@@ -211,7 +247,7 @@ namespace Picross.Game
                     Console.Write("██ ");
                     break;
                 case '2':
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write("██ ");
                     break;
                 case '1':
@@ -238,125 +274,125 @@ namespace Picross.Game
         private void CreateProblem()
         {
             // Y
-            _yBlocks[0][0] = 2;
+            _verticallyAligned[0][0] = 2;
 
-            _yBlocks[1][0] = 1;
-            _yBlocks[1][1] = 2;
+            _verticallyAligned[1][0] = 1;
+            _verticallyAligned[1][1] = 2;
 
-            _yBlocks[2][0] = 1;
-            _yBlocks[2][1] = 2;
-            _yBlocks[2][2] = 1;
+            _verticallyAligned[2][0] = 1;
+            _verticallyAligned[2][1] = 2;
+            _verticallyAligned[2][2] = 1;
 
-            _yBlocks[3][0] = 1;
-            _yBlocks[3][1] = 1;
-            _yBlocks[3][2] = 1;
-            _yBlocks[3][3] = 2;
+            _verticallyAligned[3][0] = 1;
+            _verticallyAligned[3][1] = 1;
+            _verticallyAligned[3][2] = 1;
+            _verticallyAligned[3][3] = 2;
 
-            _yBlocks[4][0] = 1;
-            _yBlocks[4][1] = 4;
-            _yBlocks[4][2] = 1;
-            _yBlocks[4][3] = 1;
+            _verticallyAligned[4][0] = 1;
+            _verticallyAligned[4][1] = 4;
+            _verticallyAligned[4][2] = 1;
+            _verticallyAligned[4][3] = 1;
 
-            _yBlocks[5][0] = 6;
-            _yBlocks[5][1] = 1;
-            _yBlocks[5][2] = 2;
+            _verticallyAligned[5][0] = 6;
+            _verticallyAligned[5][1] = 1;
+            _verticallyAligned[5][2] = 2;
 
-            _yBlocks[6][0] = 1;
-            _yBlocks[6][1] = 2;
-            _yBlocks[6][2] = 1;
-            _yBlocks[6][3] = 1;
+            _verticallyAligned[6][0] = 1;
+            _verticallyAligned[6][1] = 2;
+            _verticallyAligned[6][2] = 1;
+            _verticallyAligned[6][3] = 1;
 
-            _yBlocks[7][0] = 2;
-            _yBlocks[7][1] = 2;
-            _yBlocks[7][2] = 1;
+            _verticallyAligned[7][0] = 2;
+            _verticallyAligned[7][1] = 2;
+            _verticallyAligned[7][2] = 1;
 
-            _yBlocks[8][0] = 2;
-            _yBlocks[8][1] = 3;
-            _yBlocks[8][2] = 1;
-            _yBlocks[8][3] = 1;
+            _verticallyAligned[8][0] = 2;
+            _verticallyAligned[8][1] = 3;
+            _verticallyAligned[8][2] = 1;
+            _verticallyAligned[8][3] = 1;
 
-            _yBlocks[9][0] = 2;
-            _yBlocks[9][1] = 3;
-            _yBlocks[9][2] = 2;
+            _verticallyAligned[9][0] = 2;
+            _verticallyAligned[9][1] = 3;
+            _verticallyAligned[9][2] = 2;
 
-            _yBlocks[10][0] = 11;
-            _yBlocks[10][1] = 1;
-            _yBlocks[10][2] = 1;
+            _verticallyAligned[10][0] = 11;
+            _verticallyAligned[10][1] = 1;
+            _verticallyAligned[10][2] = 1;
 
-            _yBlocks[11][0] = 2;
-            _yBlocks[11][1] = 5;
-            _yBlocks[11][2] = 1;
+            _verticallyAligned[11][0] = 2;
+            _verticallyAligned[11][1] = 5;
+            _verticallyAligned[11][2] = 1;
 
-            _yBlocks[12][0] = 1;
-            _yBlocks[12][1] = 1;
-            _yBlocks[12][2] = 1;
-            _yBlocks[12][3] = 3;
+            _verticallyAligned[12][0] = 1;
+            _verticallyAligned[12][1] = 1;
+            _verticallyAligned[12][2] = 1;
+            _verticallyAligned[12][3] = 3;
 
-            _yBlocks[13][0] = 1;
-            _yBlocks[13][1] = 1;
-            _yBlocks[13][2] = 1;
+            _verticallyAligned[13][0] = 1;
+            _verticallyAligned[13][1] = 1;
+            _verticallyAligned[13][2] = 1;
 
-            _yBlocks[14][0] = 2;
+            _verticallyAligned[14][0] = 2;
             
             // X
-            _xBlocks[0][0] = 4;
+            _horizontallyAligned[0][0] = 4;
             
-            _xBlocks[1][0] = 2;
-            _xBlocks[1][1] = 2;
+            _horizontallyAligned[1][0] = 2;
+            _horizontallyAligned[1][1] = 2;
             
-            _xBlocks[2][0] = 1;
-            _xBlocks[2][1] = 1;
-            _xBlocks[2][2] = 1;
-            _xBlocks[2][3] = 1;
+            _horizontallyAligned[2][0] = 1;
+            _horizontallyAligned[2][1] = 1;
+            _horizontallyAligned[2][2] = 1;
+            _horizontallyAligned[2][3] = 1;
             
-            _xBlocks[3][0] = 1;
-            _xBlocks[3][1] = 1;
-            _xBlocks[3][2] = 2;
+            _horizontallyAligned[3][0] = 1;
+            _horizontallyAligned[3][1] = 1;
+            _horizontallyAligned[3][2] = 2;
             
-            _xBlocks[4][0] = 5;
-            _xBlocks[4][1] = 3;
+            _horizontallyAligned[4][0] = 5;
+            _horizontallyAligned[4][1] = 3;
             
-            _xBlocks[5][0] = 3;
-            _xBlocks[5][1] = 1;
-            _xBlocks[5][2] = 1;
-            _xBlocks[5][3] = 2;
+            _horizontallyAligned[5][0] = 3;
+            _horizontallyAligned[5][1] = 1;
+            _horizontallyAligned[5][2] = 1;
+            _horizontallyAligned[5][3] = 2;
             
-            _xBlocks[6][0] = 3;
-            _xBlocks[6][1] = 2;
-            _xBlocks[6][2] = 2;
-            _xBlocks[6][3] = 1;
+            _horizontallyAligned[6][0] = 3;
+            _horizontallyAligned[6][1] = 2;
+            _horizontallyAligned[6][2] = 2;
+            _horizontallyAligned[6][3] = 1;
             
-            _xBlocks[7][0] = 2;
-            _xBlocks[7][1] = 1;
-            _xBlocks[7][2] = 2;
-            _xBlocks[7][3] = 3;
+            _horizontallyAligned[7][0] = 2;
+            _horizontallyAligned[7][1] = 1;
+            _horizontallyAligned[7][2] = 2;
+            _horizontallyAligned[7][3] = 3;
             
-            _xBlocks[8][0] = 1;
-            _xBlocks[8][1] = 2;
-            _xBlocks[8][2] = 3;
-            _xBlocks[8][3] = 1;
+            _horizontallyAligned[8][0] = 1;
+            _horizontallyAligned[8][1] = 2;
+            _horizontallyAligned[8][2] = 3;
+            _horizontallyAligned[8][3] = 1;
             
-            _xBlocks[9][0] = 1;
-            _xBlocks[9][1] = 4;
-            _xBlocks[9][2] = 1;
+            _horizontallyAligned[9][0] = 1;
+            _horizontallyAligned[9][1] = 4;
+            _horizontallyAligned[9][2] = 1;
 
-            _xBlocks[10][0] = 1;
-            _xBlocks[10][1] = 1;
-            _xBlocks[10][2] = 5;
+            _horizontallyAligned[10][0] = 1;
+            _horizontallyAligned[10][1] = 1;
+            _horizontallyAligned[10][2] = 5;
 
-            _xBlocks[11][0] = 3;
-            _xBlocks[11][1] = 1;
-            _xBlocks[11][2] = 2;
+            _horizontallyAligned[11][0] = 3;
+            _horizontallyAligned[11][1] = 1;
+            _horizontallyAligned[11][2] = 2;
 
-            _xBlocks[12][0] = 4;
-            _xBlocks[12][1] = 1;
+            _horizontallyAligned[12][0] = 4;
+            _horizontallyAligned[12][1] = 1;
 
-            _xBlocks[13][0] = 2;
-            _xBlocks[13][1] = 2;
-            _xBlocks[13][2] = 1;
+            _horizontallyAligned[13][0] = 2;
+            _horizontallyAligned[13][1] = 2;
+            _horizontallyAligned[13][2] = 1;
 
-            _xBlocks[14][0] = 1;
-            _xBlocks[14][1] = 2;
+            _horizontallyAligned[14][0] = 1;
+            _horizontallyAligned[14][1] = 2;
         }
     }
 }

@@ -13,7 +13,6 @@ namespace Picross.Game
 
         public void Solve()
         {
-            //_board.GenerateRows(new[] {1, 2, 3, 4}, string.Concat(Enumerable.Repeat("0", 15)));
             _board.SolveIteration();
             _board.Print();
         }
