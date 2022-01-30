@@ -1,4 +1,5 @@
-﻿using Picross.Tests;
+﻿using System;
+using Picross.Tests;
 
 namespace Picross
 {
@@ -11,6 +12,8 @@ namespace Picross
         
         static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            
             var picross = new Game.Picross();
             picross.Solve();
         }

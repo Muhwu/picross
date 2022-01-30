@@ -265,7 +265,7 @@ namespace Picross.Game
                 
                 for (var index = 0; index < _width; index++)
                 {
-                    PrintBlockNumber(_verticallyAlignedBlocks[index].Length > block ? _verticallyAlignedBlocks[index][block] : 0);
+                    PrintBlockNumber(_verticallyAlignedBlocks[_width - index - 1].Length > block ? _verticallyAlignedBlocks[_width - index - 1][block] : 0);
                 }
                 Console.Write("\n");
             }
@@ -274,7 +274,7 @@ namespace Picross.Game
             {
                 for (var bl = MaxBlocks - 1; bl >= 0; bl--)
                 {
-                    PrintBlockNumber(_horizontallyAlignedBlocks[y].Length > bl ? _horizontallyAlignedBlocks[y][bl] : 0);
+                    PrintBlockNumber(_horizontallyAlignedBlocks[_height - y - 1].Length > bl ? _horizontallyAlignedBlocks[_height - y - 1][bl] : 0);
                 }
                 for (var x = 0; x < _width; x++)
                 {
@@ -286,6 +286,8 @@ namespace Picross.Game
 
         private static void PrintSquare(char square)
         {
+            var previousColor = Console.ForegroundColor;
+            
             switch (square)
             {
                 case '0':
@@ -293,16 +295,17 @@ namespace Picross.Game
                     Console.Write("██ ");
                     break;
                 case '2':
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write("██ ");
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write("░░ ");
                     break;
                 case '1':
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.Write("██ ");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            Console.ForegroundColor = previousColor;
         }
 
         private void PrintBlockNumber(int block)

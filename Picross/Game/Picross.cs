@@ -16,11 +16,10 @@ namespace Picross.Game
         {
             var changed = true;
             var i = 0;
-            Console.WriteLine("Iterating...");
+            Console.Write("Preparing solution... ");
             while (_board.SolveIteration())
             {
                 i++;
-                Console.Write(".");
             }
             Console.WriteLine("Done.");
             _board.Print();
