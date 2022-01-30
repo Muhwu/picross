@@ -6,7 +6,7 @@ namespace Picross
     static class Program
     {
         // Y
-        private static int[][] _verticallyAlignedBlocks = {
+        private static readonly int[][] VerticallyAlignedBlocks = {
             new []{ 2 },
             new []{ 1, 2 },
             new []{ 1, 2, 1 },
@@ -25,7 +25,7 @@ namespace Picross
         };
             
         // X
-        private static int[][] _horizontallyAlignedBlocks = {
+        private static readonly int[][] HorizontallyAlignedBlocks = {
             new []{ 4 },
             new []{ 2, 2 },
             new []{ 1, 1, 1, 1 },
@@ -48,7 +48,7 @@ namespace Picross
             Console.ForegroundColor = ConsoleColor.Yellow;
             
             var picross = new Game.Picross();
-            picross.Initialize(_verticallyAlignedBlocks, _horizontallyAlignedBlocks);
+            picross.Initialize(VerticallyAlignedBlocks, HorizontallyAlignedBlocks);
             
             var sw = Stopwatch.StartNew();
             picross.Solve();
