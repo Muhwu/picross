@@ -274,7 +274,7 @@ namespace Picross.Game
                 }
                 for (var x = 0; x < _width; x++)
                 {
-                    PrintSquare(_boardHorizontallyAligned[y][x]);
+                    PrintSquare(_boardHorizontallyAligned[_height - y - 1][x]);
                 }
                 Console.Write("\n");
             }

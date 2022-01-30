@@ -14,7 +14,13 @@ namespace Picross.Game
         public void Solve()
         {
             _board.SolveIteration();
-            //_board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
+            _board.SolveIteration();
             _board.Print();
         }
     }
