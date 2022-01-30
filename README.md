@@ -5,9 +5,9 @@
 ![Screenshot of iteration in progress](https://github.com/Muhwu/picross/blob/master/doc/screenshot-empty.png?raw=true)
 
 <details>
-  <summary>Abandon all hope ye who enter here! (in the Spoiler section)</summary>
+  <summary>[SPOILERS] Abandon all hope ye who enter here!</summary>
   
-  Solution to the above is here as a proof-of-concept.
+  Solution to the above is here as a proof-of-concept and of-functionality.
   
   ![Screenshot of iteration in progress](https://github.com/Muhwu/picross/blob/master/doc/screenshot-solved.png?raw=true)  
 </details>
