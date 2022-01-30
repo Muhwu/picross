@@ -12,7 +12,7 @@ namespace Picross.Game
             _board = new Board(15, 15);
         }
 
-        public void Solve()
+        public void Solve(bool showIterations = false)
         {
             var changed = true;
             var i = 0;
@@ -20,8 +20,10 @@ namespace Picross.Game
             while (_board.SolveIteration())
             {
                 i++;
+                if (showIterations) 
+                    _board.Print();
             }
-            Console.WriteLine("Done.");
+            Console.WriteLine($"Done. ({i} iterations)");
             _board.Print();
         }
     }
