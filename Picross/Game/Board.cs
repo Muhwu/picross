@@ -191,10 +191,6 @@ namespace Picross.Game
 
         private List<string> GenerateRow(int rowLength, int[] blocks, int depth = 0)
         {
-            if (depth == 0)
-            {
-                blocks = blocks.Where(b => b > 0).ToArray();
-            }
             var rows = new List<string>();
 
             for (var startIndex = 0; startIndex < rowLength; startIndex++)
@@ -241,7 +237,7 @@ namespace Picross.Game
         
         public List<string> GenerateRows(in int[] remainingBlocks, string row)
         {
-            var blocks = remainingBlocks.Reverse().Where(b => b > 0).ToArray();
+            var blocks = remainingBlocks.ToArray();
             var rows = GenerateRow(row.Length, blocks);
             return rows;
         }
@@ -259,7 +255,7 @@ namespace Picross.Game
                 
                 for (var index = 0; index < _width; index++)
                 {
-                    PrintBlockNumber(_verticallyAlignedBlocks[index][block]);
+                    PrintBlockNumber(_verticallyAlignedBlocks[index].Length > block ? _verticallyAlignedBlocks[index][block] : 0);
                 }
                 Console.Write("\n");
             }
@@ -268,7 +264,7 @@ namespace Picross.Game
             {
                 for (var bl = MaxBlocks - 1; bl >= 0; bl--)
                 {
-                    PrintBlockNumber(_horizontallyAlignedBlocks[y][bl]);
+                    PrintBlockNumber(_horizontallyAlignedBlocks[y].Length > bl ? _horizontallyAlignedBlocks[y][bl] : 0);
                 }
                 for (var x = 0; x < _width; x++)
                 {
@@ -318,111 +314,34 @@ namespace Picross.Game
             _verticallyAlignedBlocks[1] = new []{ 1, 2 };
             _verticallyAlignedBlocks[2] = new []{ 1, 2, 1 };
             _verticallyAlignedBlocks[3] = new []{ 1, 1, 1, 2 };
-            _verticallyAlignedBlocks[4][0] = 1;
-            _verticallyAlignedBlocks[4][1] = 4;
-            _verticallyAlignedBlocks[4][2] = 1;
-            _verticallyAlignedBlocks[4][3] = 1;
-
-            _verticallyAlignedBlocks[5][0] = 6;
-            _verticallyAlignedBlocks[5][1] = 1;
-            _verticallyAlignedBlocks[5][2] = 2;
-
-            _verticallyAlignedBlocks[6][0] = 1;
-            _verticallyAlignedBlocks[6][1] = 2;
-            _verticallyAlignedBlocks[6][2] = 1;
-            _verticallyAlignedBlocks[6][3] = 1;
-
-            _verticallyAlignedBlocks[7][0] = 2;
-            _verticallyAlignedBlocks[7][1] = 2;
-            _verticallyAlignedBlocks[7][2] = 1;
-
-            _verticallyAlignedBlocks[8][0] = 2;
-            _verticallyAlignedBlocks[8][1] = 3;
-            _verticallyAlignedBlocks[8][2] = 1;
-            _verticallyAlignedBlocks[8][3] = 1;
-
-            _verticallyAlignedBlocks[9][0] = 2;
-            _verticallyAlignedBlocks[9][1] = 3;
-            _verticallyAlignedBlocks[9][2] = 2;
-
-            _verticallyAlignedBlocks[10][0] = 11;
-            _verticallyAlignedBlocks[10][1] = 1;
-            _verticallyAlignedBlocks[10][2] = 1;
-
-            _verticallyAlignedBlocks[11][0] = 2;
-            _verticallyAlignedBlocks[11][1] = 5;
-            _verticallyAlignedBlocks[11][2] = 1;
-
-            _verticallyAlignedBlocks[12][0] = 1;
-            _verticallyAlignedBlocks[12][1] = 1;
-            _verticallyAlignedBlocks[12][2] = 1;
-            _verticallyAlignedBlocks[12][3] = 3;
-
-            _verticallyAlignedBlocks[13][0] = 1;
-            _verticallyAlignedBlocks[13][1] = 1;
-            _verticallyAlignedBlocks[13][2] = 1;
-
-            _verticallyAlignedBlocks[14][0] = 2;
+            _verticallyAlignedBlocks[4] = new []{ 1, 4, 1, 1};
+            _verticallyAlignedBlocks[5] = new []{ 6, 1, 2};
+            _verticallyAlignedBlocks[6] = new []{ 1, 2, 1, 1 };
+            _verticallyAlignedBlocks[7] = new []{ 2, 2, 1 };
+            _verticallyAlignedBlocks[8] = new []{ 2, 3, 1, 1 };
+            _verticallyAlignedBlocks[9] = new []{ 2, 3, 2 };
+            _verticallyAlignedBlocks[10] = new []{ 11, 1, 1 };
+            _verticallyAlignedBlocks[11] = new []{ 2, 5, 1 };
+            _verticallyAlignedBlocks[12] = new []{ 1, 1, 1, 3 };
+            _verticallyAlignedBlocks[13] = new []{ 1, 1, 1 };
+            _verticallyAlignedBlocks[14] = new []{ 2 };
             
             // X
-            _horizontallyAlignedBlocks[0][0] = 4;
-            
-            _horizontallyAlignedBlocks[1][0] = 2;
-            _horizontallyAlignedBlocks[1][1] = 2;
-            
-            _horizontallyAlignedBlocks[2][0] = 1;
-            _horizontallyAlignedBlocks[2][1] = 1;
-            _horizontallyAlignedBlocks[2][2] = 1;
-            _horizontallyAlignedBlocks[2][3] = 1;
-            
-            _horizontallyAlignedBlocks[3][0] = 1;
-            _horizontallyAlignedBlocks[3][1] = 1;
-            _horizontallyAlignedBlocks[3][2] = 2;
-            
-            _horizontallyAlignedBlocks[4][0] = 5;
-            _horizontallyAlignedBlocks[4][1] = 3;
-            
-            _horizontallyAlignedBlocks[5][0] = 3;
-            _horizontallyAlignedBlocks[5][1] = 1;
-            _horizontallyAlignedBlocks[5][2] = 1;
-            _horizontallyAlignedBlocks[5][3] = 2;
-            
-            _horizontallyAlignedBlocks[6][0] = 3;
-            _horizontallyAlignedBlocks[6][1] = 2;
-            _horizontallyAlignedBlocks[6][2] = 2;
-            _horizontallyAlignedBlocks[6][3] = 1;
-            
-            _horizontallyAlignedBlocks[7][0] = 2;
-            _horizontallyAlignedBlocks[7][1] = 1;
-            _horizontallyAlignedBlocks[7][2] = 2;
-            _horizontallyAlignedBlocks[7][3] = 3;
-            
-            _horizontallyAlignedBlocks[8][0] = 1;
-            _horizontallyAlignedBlocks[8][1] = 2;
-            _horizontallyAlignedBlocks[8][2] = 3;
-            _horizontallyAlignedBlocks[8][3] = 1;
-            
-            _horizontallyAlignedBlocks[9][0] = 1;
-            _horizontallyAlignedBlocks[9][1] = 4;
-            _horizontallyAlignedBlocks[9][2] = 1;
-
-            _horizontallyAlignedBlocks[10][0] = 1;
-            _horizontallyAlignedBlocks[10][1] = 1;
-            _horizontallyAlignedBlocks[10][2] = 5;
-
-            _horizontallyAlignedBlocks[11][0] = 3;
-            _horizontallyAlignedBlocks[11][1] = 1;
-            _horizontallyAlignedBlocks[11][2] = 2;
-
-            _horizontallyAlignedBlocks[12][0] = 4;
-            _horizontallyAlignedBlocks[12][1] = 1;
-
-            _horizontallyAlignedBlocks[13][0] = 2;
-            _horizontallyAlignedBlocks[13][1] = 2;
-            _horizontallyAlignedBlocks[13][2] = 1;
-
-            _horizontallyAlignedBlocks[14][0] = 1;
-            _horizontallyAlignedBlocks[14][1] = 2;
+            _horizontallyAlignedBlocks[0] = new []{ 4 };
+            _horizontallyAlignedBlocks[1] = new []{ 2, 2 };
+            _horizontallyAlignedBlocks[2] = new []{ 1, 1, 1, 1 };
+            _horizontallyAlignedBlocks[3] = new []{ 1, 1, 2 };
+            _horizontallyAlignedBlocks[4] = new []{ 5, 3 };
+            _horizontallyAlignedBlocks[5] = new []{ 3, 1, 1, 2 };
+            _horizontallyAlignedBlocks[6] = new []{ 3, 2, 2, 1 };
+            _horizontallyAlignedBlocks[7] = new []{ 2, 1, 2, 3 };
+            _horizontallyAlignedBlocks[8] = new []{ 1, 2, 3, 1 };
+            _horizontallyAlignedBlocks[9] = new []{ 1, 4, 1 };
+            _horizontallyAlignedBlocks[10] = new []{ 1, 1, 5 };
+            _horizontallyAlignedBlocks[11] = new []{ 3, 1, 2 };
+            _horizontallyAlignedBlocks[12] = new []{ 4, 1 };
+            _horizontallyAlignedBlocks[13] = new []{ 2, 2, 1 };
+            _horizontallyAlignedBlocks[14] = new []{ 1, 2 };
         }
     }
 }
