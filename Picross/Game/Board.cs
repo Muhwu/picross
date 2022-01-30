@@ -52,45 +52,63 @@ namespace Picross.Game
             for (var y = 0; y < _height; y++)
             {
                 var validOnes = GenerateRows(_horizontallyAlignedBlocks[y], _boardHorizontallyAligned[y]);
-                var validCompatible = new List<string>();
-                foreach (var valid in validOnes)
+                var validCompatible = GetValidCompatible(validOnes, _boardHorizontallyAligned[y], _horizontallyAlignedBlocks[y]);
+                if (validCompatible.Count == 0) continue;
+            
+                // Check for present in all valid
+                CalculateInevitables(validCompatible, out var counters1, out var counters2);
+            
+                for (var x = 0; x < _width; x++)
                 {
-                    var merged = Merge(_boardHorizontallyAligned[y], valid);
-                    if (merged != "")
-                    {
-                        validCompatible.Add(merged);
-                    }
-                    else
-                    {
-                        LogError($"Merge failure between {_boardHorizontallyAligned[y]} and {valid}");
-                    }
+                    SetIfInevitable(x, y, validCompatible, counters1, counters2);
                 }
-
-                if (validCompatible.Count == 0)
-                {
-                    LogError($"Valid compatible not found for row {y}");
-                    continue;
-                }
+            }
+            
+            for (var x = 0; x < _width; x++)
+            {
+                var validOnes = GenerateRows(_verticallyAlignedBlocks[x], _boardVerticallyAligned[x]);
+                var validCompatible = GetValidCompatible(validOnes, _boardVerticallyAligned[x], _verticallyAlignedBlocks[x]);
+                if (validCompatible.Count == 0) continue;
 
                 // Check for present in all valid
                 CalculateInevitables(validCompatible, out var counters1, out var counters2);
 
-                for (var x = 0; x < _width; x++)
+                for (var y = 0; y < _height; y++)
                 {
-                    if (counters1[x] == validCompatible.Count)
-                    {
-                        Console.WriteLine($"{counters1[x]} ones out of {validCompatible.Count} for ({x},{y})");
-                        Set(x, y, "1");
-                    }
-                    else if (counters2[x] == validCompatible.Count)
-                    {
-                        Console.WriteLine($"{counters2[x]} twos out of {validCompatible.Count} for ({x},{y})");
-                        Set(x, y, "2");
-                    }
+                    SetIfInevitable(x, y, validCompatible, counters1, counters2);
                 }
             }
             
             return true;
+        }
+
+        private List<string> GetValidCompatible(List<string> validOnes, string boardAxis, int[] blocks)
+        {
+            var validCompatible = new List<string>();
+            foreach (var valid in validOnes)
+            {
+                var merged = Merge(boardAxis, valid);
+                if (merged != "" && IsLegal(merged, blocks))
+                {
+                    validCompatible.Add(merged);
+                }
+            }
+
+            return validCompatible;
+        }
+
+        private void SetIfInevitable(int x, int y, List<string> validCompatible, int[] counters1, int[] counters2)
+        {
+            if (counters1[x] == validCompatible.Count)
+            {
+                Console.WriteLine($"{counters1[x]} ones out of {validCompatible.Count} for ({x},{y})");
+                Set(x, y, "1");
+            }
+            else if (counters2[x] == validCompatible.Count)
+            {
+                Console.WriteLine($"{counters2[x]} twos out of {validCompatible.Count} for ({x},{y})");
+                Set(x, y, "2");
+            }
         }
 
         private void LogError(string error)
@@ -223,7 +241,8 @@ namespace Picross.Game
         
         public List<string> GenerateRows(in int[] remainingBlocks, string row)
         {
-            var rows = GenerateRow(row.Length, remainingBlocks);
+            var blocks = remainingBlocks.Reverse().Where(b => b > 0).ToArray();
+            var rows = GenerateRow(row.Length, blocks);
             return rows;
         }
 
@@ -240,7 +259,7 @@ namespace Picross.Game
                 
                 for (var index = 0; index < _width; index++)
                 {
-                    PrintBlockNumber(index, _verticallyAlignedBlocks[index][block]);
+                    PrintBlockNumber(_verticallyAlignedBlocks[index][block]);
                 }
                 Console.Write("\n");
             }
@@ -249,7 +268,7 @@ namespace Picross.Game
             {
                 for (var bl = MaxBlocks - 1; bl >= 0; bl--)
                 {
-                    PrintBlockNumber(y, _horizontallyAlignedBlocks[y][bl]);
+                    PrintBlockNumber(_horizontallyAlignedBlocks[y][bl]);
                 }
                 for (var x = 0; x < _width; x++)
                 {
@@ -280,7 +299,7 @@ namespace Picross.Game
             }
         }
 
-        private void PrintBlockNumber(int index, int block)
+        private void PrintBlockNumber(int block)
         {
             if (block > 0)
             {
@@ -295,20 +314,10 @@ namespace Picross.Game
         private void CreateProblem()
         {
             // Y
-            _verticallyAlignedBlocks[0][0] = 2;
-
-            _verticallyAlignedBlocks[1][0] = 1;
-            _verticallyAlignedBlocks[1][1] = 2;
-
-            _verticallyAlignedBlocks[2][0] = 1;
-            _verticallyAlignedBlocks[2][1] = 2;
-            _verticallyAlignedBlocks[2][2] = 1;
-
-            _verticallyAlignedBlocks[3][0] = 1;
-            _verticallyAlignedBlocks[3][1] = 1;
-            _verticallyAlignedBlocks[3][2] = 1;
-            _verticallyAlignedBlocks[3][3] = 2;
-
+            _verticallyAlignedBlocks[0] = new []{ 2 };
+            _verticallyAlignedBlocks[1] = new []{ 1, 2 };
+            _verticallyAlignedBlocks[2] = new []{ 1, 2, 1 };
+            _verticallyAlignedBlocks[3] = new []{ 1, 1, 1, 2 };
             _verticallyAlignedBlocks[4][0] = 1;
             _verticallyAlignedBlocks[4][1] = 4;
             _verticallyAlignedBlocks[4][2] = 1;
