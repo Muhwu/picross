@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Picross.Game
 {
@@ -13,14 +14,15 @@ namespace Picross.Game
 
         public void Solve()
         {
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
-            _board.SolveIteration();
+            var changed = true;
+            var i = 0;
+            Console.WriteLine("Iterating...");
+            while (_board.SolveIteration())
+            {
+                i++;
+                Console.Write(".");
+            }
+            Console.WriteLine("Done.");
             _board.Print();
         }
     }

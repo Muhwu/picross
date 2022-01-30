@@ -38,21 +38,21 @@ namespace Picross.Game
             _horizontallyAlignedBlocks = new int[width][];
             _verticallyAlignedBlocks = new int[height][];
 
-            for (var i = 0; i < width; i++)
-            {
-                _horizontallyAlignedBlocks[i] = new int[MaxBlocks];
-                _verticallyAlignedBlocks[i] = new int[MaxBlocks];
-            }
-
             CreateProblem();
+            _verticallyAlignedBlocks = _verticallyAlignedBlocks.Reverse().ToArray();
+            _horizontallyAlignedBlocks = _horizontallyAlignedBlocks.Reverse().ToArray();
         }
 
         public bool SolveIteration()
         {
+            var changed = false;
+            
             for (var y = 0; y < _height; y++)
             {
-                var validOnes = GenerateRows(_horizontallyAlignedBlocks[y], _boardHorizontallyAligned[y]);
-                var validCompatible = GetValidCompatible(validOnes, _boardHorizontallyAligned[y], _horizontallyAlignedBlocks[y]);
+                var horizontal = _horizontallyAlignedBlocks[y].ToArray();
+                
+                var validOnes = GenerateRows(horizontal, _boardHorizontallyAligned[y]);
+                var validCompatible = GetValidCompatible(validOnes, _boardHorizontallyAligned[y], horizontal);
                 if (validCompatible.Count == 0) continue;
             
                 // Check for present in all valid
@@ -60,7 +60,8 @@ namespace Picross.Game
             
                 for (var x = 0; x < _width; x++)
                 {
-                    SetIfInevitable(x, y, Axis.Horizontal, validCompatible, counters1, counters2);
+                    var set = SetIfInevitable(x, y, Axis.Horizontal, validCompatible, counters1, counters2);
+                    if (set) changed = true;
                 }
             }
             
@@ -75,11 +76,12 @@ namespace Picross.Game
 
                 for (var y = 0; y < _height; y++)
                 {
-                    SetIfInevitable(x, y, Axis.Vertical, validCompatible, counters1, counters2);
+                    var set = SetIfInevitable(x, y, Axis.Vertical, validCompatible, counters1, counters2);
+                    if (set) changed = true;
                 }
             }
             
-            return true;
+            return changed;
         }
 
         private List<string> GetValidCompatible(List<string> validOnes, string boardAxis, int[] blocks)
@@ -102,19 +104,20 @@ namespace Picross.Game
             Horizontal,
             Vertical
         }
-        private void SetIfInevitable(int x, int y, Axis axis, List<string> validCompatible, int[] counters1, int[] counters2)
+        private bool SetIfInevitable(int x, int y, Axis axis, List<string> validCompatible, int[] counters1, int[] counters2)
         {
             var index = axis == Axis.Horizontal ? x : y;
             if (counters1[index] == validCompatible.Count)
             {
-                Console.WriteLine($"{counters1[index]} ones out of {validCompatible.Count} for ({x},{y})");
-                Set(x, y, "1");
+                return Set(x, y, "1");
             }
-            else if (counters2[index] == validCompatible.Count)
+            
+            if (counters2[index] == validCompatible.Count)
             {
-                Console.WriteLine($"{counters2[index]} twos out of {validCompatible.Count} for ({x},{y})");
-                Set(x, y, "2");
+                return Set(x, y, "2");
             }
+
+            return false;
         }
 
         private void LogError(string error)
@@ -138,10 +141,14 @@ namespace Picross.Game
             }
         }
 
-        private void Set(int x, int y, string value)
+        private bool Set(int x, int y, string value)
         {
+            if (_boardVerticallyAligned[x][y] == value[0]) return false;
+            
             _boardVerticallyAligned[x] = _boardVerticallyAligned[x].Remove(y, 1).Insert(y, value);
             _boardHorizontallyAligned[y] = _boardHorizontallyAligned[y].Remove(x, 1).Insert(x, value);
+            
+            return true;
         }
         
         public string Merge(string existing, string proposal)
@@ -202,7 +209,7 @@ namespace Picross.Game
             for (var startIndex = 0; startIndex < rowLength; startIndex++)
             {
                 var lineSegment = "";
-                lineSegment += string.Concat(Enumerable.Repeat("0", startIndex));
+                lineSegment += string.Concat(Enumerable.Repeat("2", startIndex));
                 if (startIndex > 0)
                 {
                     lineSegment = lineSegment.Remove(lineSegment.Length - 1, 1) + "2";
@@ -220,7 +227,7 @@ namespace Picross.Game
                     }
 
                     if (remainingRow - 1 > 0)
-                        lineSegment += string.Concat(Enumerable.Repeat("0", remainingRow - 1));
+                        lineSegment += string.Concat(Enumerable.Repeat("2", remainingRow - 1));
                     
                     rows.Add(lineSegment);
                 }
@@ -235,9 +242,6 @@ namespace Picross.Game
                 }
             }
 
-            //Console.WriteLine(string.Join("\n", rows));
-            //Console.WriteLine($"{rows.Count} permutations");
-            
             return rows;
         }
         
@@ -274,7 +278,7 @@ namespace Picross.Game
                 }
                 for (var x = 0; x < _width; x++)
                 {
-                    PrintSquare(_boardHorizontallyAligned[_height - y - 1][x]);
+                    PrintSquare(_boardHorizontallyAligned[_height - y - 1][_width - x - 1]);
                 }
                 Console.Write("\n");
             }
