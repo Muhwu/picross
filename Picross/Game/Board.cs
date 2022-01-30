@@ -60,7 +60,7 @@ namespace Picross.Game
             
                 for (var x = 0; x < _width; x++)
                 {
-                    SetIfInevitable(x, y, validCompatible, counters1, counters2);
+                    SetIfInevitable(x, y, Axis.Horizontal, validCompatible, counters1, counters2);
                 }
             }
             
@@ -75,7 +75,7 @@ namespace Picross.Game
 
                 for (var y = 0; y < _height; y++)
                 {
-                    SetIfInevitable(x, y, validCompatible, counters1, counters2);
+                    SetIfInevitable(x, y, Axis.Vertical, validCompatible, counters1, counters2);
                 }
             }
             
@@ -97,16 +97,22 @@ namespace Picross.Game
             return validCompatible;
         }
 
-        private void SetIfInevitable(int x, int y, List<string> validCompatible, int[] counters1, int[] counters2)
+        private enum Axis
         {
-            if (counters1[x] == validCompatible.Count)
+            Horizontal,
+            Vertical
+        }
+        private void SetIfInevitable(int x, int y, Axis axis, List<string> validCompatible, int[] counters1, int[] counters2)
+        {
+            var index = axis == Axis.Horizontal ? x : y;
+            if (counters1[index] == validCompatible.Count)
             {
-                Console.WriteLine($"{counters1[x]} ones out of {validCompatible.Count} for ({x},{y})");
+                Console.WriteLine($"{counters1[index]} ones out of {validCompatible.Count} for ({x},{y})");
                 Set(x, y, "1");
             }
-            else if (counters2[x] == validCompatible.Count)
+            else if (counters2[index] == validCompatible.Count)
             {
-                Console.WriteLine($"{counters2[x]} twos out of {validCompatible.Count} for ({x},{y})");
+                Console.WriteLine($"{counters2[index]} twos out of {validCompatible.Count} for ({x},{y})");
                 Set(x, y, "2");
             }
         }
