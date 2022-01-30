@@ -85,12 +85,12 @@ namespace Picross.Game
         {
             if (row.Length != _width) return false;
 
-            var regEx = "^0*";
+            var regEx = "^[02]*";
             for (var index = 0; index < blocks.Length; index++)
             {
                 if (index > 0)
                 {
-                    regEx += "0+";
+                    regEx += "[20]+";
                 }
                 var b = blocks[index];
                 regEx += $"1{{{b}}}";
