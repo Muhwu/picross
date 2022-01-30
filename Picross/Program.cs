@@ -7,10 +7,10 @@ namespace Picross
     {
         static void Main(string[] args)
         {
-            TestLegality.Run();
+            //TestLegality.Run();
             
             var picross = new Game.Picross();
-            //picross.Solve();
+            picross.Solve();
         }
     }
 }

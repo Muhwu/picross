@@ -19,8 +19,9 @@ namespace Picross.Tests
         {
             return new()
             {
-                new() { InputString = "101101110000000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
-                new() { InputString = "010110111000000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
+                new() { InputString = "121121112000000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
+                new() { InputString = "121122111220000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
+                new() { InputString = "212112111000000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
                 new() { InputString = "100001100000111", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = true },
                 new() { InputString = "1000011000001111", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = false },
                 new() { InputString = "101101111000000", InputBlocks = new [] { 1,2,3 }, TargetLength = 15, IsValid = false },

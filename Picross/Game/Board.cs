@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,6 +15,7 @@ namespace Picross.Game
         private int _height;
 
         private string[] _squares;
+        private string[] _squaresVertical;
 
         private int[][] _xBlocks;
         private int[][] _yBlocks;
@@ -22,10 +24,16 @@ namespace Picross.Game
         {
             _width = width;
             _height = height;
-            _squares = new string[width];
-            for (var i = 0; i < _squares.Length; i++)
+            _squares = new string[_height];
+            _squaresVertical = new string[_width];
+            for (var i = 0; i < _height; i++)
             {
-                _squares[i] = string.Concat(Enumerable.Repeat("0", _height));
+                _squares[i] = string.Concat(Enumerable.Repeat("0", _width));
+            }
+
+            for (var j = 0; j < _width; j++)
+            {
+                _squaresVertical[j] = string.Concat(Enumerable.Repeat("0", _height));
             }
 
             _xBlocks = new int[width][];
@@ -42,9 +50,21 @@ namespace Picross.Game
 
         public bool SolveIteration()
         {
-            for (var x = 0; x < _width; x++)
+            for (var y = 0; y < _height; y++)
             {
-                //EvaluateRow(_xBlocks[x], _squares[x]);
+                var validOnes = GenerateRows(_xBlocks[y], _squares[y]);
+                var validCompatible = new List<string>();
+                foreach (var valid in validOnes)
+                {
+                    var merged = Merge(_squares[y], valid);
+                    if (merged != "")
+                    {
+                        validCompatible.Add(merged);
+                        Console.WriteLine(merged);
+                    }
+                }
+
+                break;
             }
             
             return true;
@@ -90,13 +110,13 @@ namespace Picross.Game
             {
                 if (index > 0)
                 {
-                    regEx += "[20]+";
+                    regEx += "[02]+";
                 }
                 var b = blocks[index];
                 regEx += $"1{{{b}}}";
             }
 
-            regEx += "0*$";
+            regEx += "[02]*$";
 
             return Regex.IsMatch(row, regEx);
         }
@@ -118,7 +138,7 @@ namespace Picross.Game
                 var remainingRow = rowLength - startIndex - blocks[0];
                 if (remainingRow < 0) continue;
                 
-                if (blocks.Length == 1)
+                if (blocks.Length == 1 || blocks[1] == 0)
                 {
                     if (remainingRow > 0)
                     {
